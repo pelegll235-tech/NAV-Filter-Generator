@@ -1,0 +1,34 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build_exe:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PyWebView and PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          pip install pywebview pyinstaller
+
+      - name: Compile to Single EXE
+        run: |
+          pyinstaller --noconsole --onefile --icon=icon.ico --add-data "index.html;." --name "NAV_Filter_Generator" main.py
+
+      - name: Upload Compiled EXE for Download
+        uses: actions/upload-artifact@v4
+        with:
+          name: NAV-Filter-Generator-EXE
+          path: dist/NAV_Filter_Generator.exe
