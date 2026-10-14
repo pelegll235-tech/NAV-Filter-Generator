@@ -1,0 +1,2363 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מחולל מסננים מקצועי - Dynamics NAV / Business Central</title>
+    <style>
+        :root {
+            --primary: #0f2b5c;
+            --primary-hover: #0a1e40;
+            --accent: #0078d4;
+            --accent-hover: #0060aa;
+            --accent-light: #e6f2fb;
+            --success: #10b981;
+            --success-hover: #059669;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --bg: #f3f5f9;
+            --card-bg: #ffffff;
+            --border: #d5dbe5;
+            --border-focus: #0078d4;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --text-light: #94a3b8;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 12px 30px rgba(15,43,92,0.12);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, -apple-system, Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 24px 16px;
+            display: flex;
+            justify-content: center;
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 980px;
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1e4287 100%);
+            color: white;
+            padding: 22px 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .header-title-box h1 {
+            font-size: 1.55rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-title-box p {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            margin-top: 4px;
+        }
+
+        .badge-nav {
+            background: rgba(255, 255, 255, 0.16);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-header-action {
+            background: rgba(255,255,255,0.12);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.22);
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.84rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            transition: all 0.2s;
+            user-select: none;
+        }
+
+        .btn-header-action:hover {
+            background: rgba(255,255,255,0.24);
+            transform: translateY(-1px);
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            background-color: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 16px 14px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            white-space: nowrap;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background-color: #f1f5f9;
+            color: var(--text-main);
+        }
+
+        .tab-btn.active {
+            background-color: var(--card-bg);
+            color: var(--accent);
+            border-bottom: 3px solid var(--accent);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 24px;
+            flex: 1;
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* View Mode Switcher (Normal vs Excel) */
+        .view-mode-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .view-toggle-group {
+            display: flex;
+            background: #e2e8f0;
+            border-radius: var(--radius-sm);
+            padding: 3px;
+            gap: 3px;
+        }
+
+        .view-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 14px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .view-btn.active {
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        /* Input Format Bar */
+        .format-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.86rem;
+            flex-wrap: wrap;
+        }
+
+        .format-label {
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .format-pills {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .format-pill {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.82rem;
+            transition: all 0.15s;
+            user-select: none;
+        }
+
+        .format-pill:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .format-pill.active {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Input Area & Line Operations */
+        .input-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .input-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .prefix-tools {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .prefix-label {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-left: 2px;
+        }
+
+        .btn-prefix {
+            background: #f1f5f9;
+            border: 1px solid var(--border);
+            padding: 5px 11px;
+            border-radius: 6px;
+            font-size: 0.84rem;
+            font-weight: 700;
+            font-family: Consolas, monospace;
+            cursor: pointer;
+            color: var(--primary);
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-prefix:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        .btn-prefix.accent {
+            background: #eff6ff;
+            border-color: #93c5fd;
+            color: #1d4ed8;
+            box-shadow: 0 1px 3px rgba(29, 78, 216, 0.1);
+        }
+
+        .textarea-wrapper {
+            position: relative;
+            margin-bottom: 6px;
+        }
+
+        /* Resizable Textarea (both directions) */
+        textarea#list-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.96rem;
+            outline: none;
+            line-height: 1.5;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            resize: both !important;
+            min-height: 140px;
+            min-width: 260px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.03);
+            font-family: Consolas, 'Segoe UI', monospace;
+            overflow: auto;
+        }
+
+        textarea#list-input:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15);
+        }
+
+        .resize-controls {
+            display: flex;
+            align-items: center;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-bottom: 14px;
+        }
+
+        /* Items & Chars Counter Bar */
+        .stats-badge-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            padding: 9px 16px;
+            margin-bottom: 18px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-number {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 0.98rem;
+            background: #e2e8f0;
+            padding: 2px 9px;
+            border-radius: 12px;
+        }
+
+        .stat-highlight {
+            color: #0f766e;
+            background: #ccfbf1;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 12px;
+            border: 1px solid #99f6e4;
+        }
+
+        /* Excel View Grid */
+        .excel-container {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            background: white;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .excel-toolbar {
+            background: #f8fafc;
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .excel-table-scroll {
+            max-height: 290px;
+            overflow-y: auto;
+        }
+
+        .excel-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            text-align: right;
+        }
+
+        .excel-table th {
+            background: #edf2f7;
+            padding: 8px 10px;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .excel-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .excel-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .excel-cell-input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-family: Consolas, monospace;
+            background: transparent;
+            outline: none;
+        }
+
+        .excel-cell-input:focus {
+            background: white;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.1);
+        }
+
+        .row-num {
+            color: var(--text-light);
+            font-size: 0.8rem;
+            text-align: center;
+            width: 42px;
+            user-select: none;
+        }
+
+        .prefix-badge-btn {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            padding: 4px 9px;
+            border-radius: 5px;
+            font-weight: 700;
+            font-family: monospace;
+            cursor: pointer;
+            font-size: 0.82rem;
+            min-width: 44px;
+            text-align: center;
+            display: inline-block;
+            transition: all 0.15s;
+        }
+
+        .prefix-badge-btn:hover {
+            border-color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        .prefix-badge-btn.active {
+            background: #dbeafe;
+            color: #1e40af;
+            border-color: #93c5fd;
+        }
+
+        .btn-table-action {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 4px 7px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+        }
+
+        .btn-table-action:hover {
+            color: var(--danger);
+            background: #fee2e2;
+        }
+
+        /* Output Box Section - Located directly above "אפשרויות ומסננים" */
+        .output-section {
+            background: #f8fafc;
+            border: 1.5px solid #cbd5e1;
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .output-title-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .output-title {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.05rem;
+        }
+
+        .output-char-badge {
+            background: #e2e8f0;
+            color: var(--text-muted);
+            padding: 2px 9px;
+            border-radius: 12px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .output-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-copy {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.92rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 2px 6px rgba(0, 120, 212, 0.25);
+        }
+
+        .btn-copy:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-copy.success {
+            background-color: var(--success);
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-favorite {
+            background: white;
+            color: #b45309;
+            border: 1.5px solid #fcd34d;
+            padding: 7px 14px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-favorite:hover {
+            background: #fffbeb;
+            border-color: var(--warning);
+            transform: translateY(-1px);
+        }
+
+        .btn-clear {
+            background: white;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 7px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.15s;
+        }
+
+        .btn-clear:hover {
+            background: #f1f5f9;
+            color: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .output-box-wrapper-full {
+            width: 100%;
+        }
+
+        .output-box-full {
+            width: 100%;
+            font-family: Consolas, 'Courier New', Courier, monospace;
+            font-weight: 600;
+            font-size: 1.08rem;
+            color: #0f172a;
+            background-color: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            padding: 12px 14px;
+            border-radius: var(--radius-sm);
+            outline: none;
+            direction: ltr;
+            text-align: left;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .output-box-full:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.15);
+        }
+
+        /* Filter Controls Panel */
+        .controls-panel {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px 18px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .panel-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .panel-title {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text-main);
+            min-width: 110px;
+            padding-top: 8px;
+        }
+
+        /* 4 Columns Grid */
+        .checkboxes-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            flex: 1;
+        }
+
+        @media (max-width: 860px) {
+            .checkboxes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 520px) {
+            .checkboxes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 0.88rem;
+            user-select: none;
+            background: white;
+            padding: 9px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 0.15s;
+        }
+
+        .custom-checkbox:hover {
+            border-color: var(--accent);
+            background: #fafcfe;
+        }
+
+        .custom-checkbox.checked {
+            border-color: var(--accent);
+            background: #f0f7ff;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .custom-checkbox input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Custom separator taking exactly 2 slots in the grid row */
+        .custom-sep-grid-card {
+            grid-column: span 2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: white;
+            padding: 8px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.88rem;
+            transition: all 0.15s;
+        }
+
+        @media (max-width: 520px) {
+            .custom-sep-grid-card {
+                grid-column: span 1;
+            }
+        }
+
+        .custom-sep-grid-card:focus-within {
+            border-color: var(--accent);
+        }
+
+        .custom-sep-label {
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+
+        .custom-sep-grid-card input {
+            width: 110px;
+            padding: 5px 8px;
+            font-size: 0.92rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: monospace;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .custom-sep-grid-card input:focus {
+            border-color: var(--accent);
+        }
+
+        /* Drawer / Collapsible Sections for History & Favorites */
+        .drawer-container {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .drawer-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: white;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .drawer-header {
+            padding: 12px 16px;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            border-bottom: 1px solid transparent;
+        }
+
+        .drawer-card.open .drawer-header {
+            border-bottom-color: var(--border);
+        }
+
+        .drawer-header-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: var(--text-main);
+        }
+
+        .drawer-badge {
+            background: #e2e8f0;
+            color: var(--text-muted);
+            font-size: 0.76rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .drawer-content {
+            display: none;
+            padding: 14px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .drawer-card.open .drawer-content {
+            display: block;
+        }
+
+        .list-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .list-item-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: var(--radius-sm);
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.15s;
+        }
+
+        .list-item-card:hover {
+            border-color: #cbd5e1;
+            background: #f1f5f9;
+        }
+
+        .item-text-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .item-text-val {
+            font-family: Consolas, monospace;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--text-main);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .item-meta {
+            font-size: 0.76rem;
+            color: var(--text-light);
+            display: flex;
+            gap: 10px;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        /* Order Up/Down Buttons */
+        .order-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            margin-left: 2px;
+        }
+
+        .btn-arrow {
+            background: white;
+            border: 1px solid #cbd5e1;
+            color: var(--text-muted);
+            width: 24px;
+            height: 18px;
+            padding: 0;
+            font-size: 0.68rem;
+            line-height: 1;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+
+        .btn-arrow:hover:not(:disabled) {
+            background: var(--accent-light);
+            color: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-arrow:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .btn-mini {
+            background: white;
+            border: 1px solid #cbd5e1;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: all 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-mini:hover {
+            background: #f1f5f9;
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-mini.fav-btn:hover {
+            border-color: var(--warning);
+            color: #b45309;
+            background: #fffbeb;
+        }
+
+        .btn-mini.danger:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .empty-hint {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.88rem;
+            padding: 16px;
+        }
+
+        /* Tab 2: Range Styling */
+        .range-box {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .col {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            color: var(--text-main);
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background: white;
+        }
+
+        input[type="text"]:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        .quick-btn-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .quick-btn {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: all 0.15s;
+        }
+
+        .quick-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-light);
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background-color: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 0.92rem;
+            font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Modals */
+        .modal-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.5);
+            z-index: 1001;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: white;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            animation: modalIn 0.2s ease-out;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-header {
+            padding: 16px 20px;
+            background: #f8fafc;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 14px 20px;
+            background: #f8fafc;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-modal-primary {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-modal-cancel {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+        }
+
+        /* SVG icon sizing */
+        .icon {
+            width: 18px;
+            height: 18px;
+            display: inline-block;
+            vertical-align: middle;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- Header -->
+    <div class="header">
+        <div class="header-title-box">
+            <h1>
+                <svg class="icon" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></svg>
+                מחולל מסננים ל-Dynamics NAV
+                <span class="badge-nav">Business Central</span>
+            </h1>
+            <p>המרת רשימות, טווחים וערכים למחרוזת סינון תקנית במהירות וביעילות</p>
+        </div>
+        <div class="header-actions">
+            <button class="btn-header-action" onclick="toggleDrawer('favs')" title="פתיחת רשימת מועדפים">
+                <span>⭐</span> מועדפים (<span id="fav-count-badge">0</span>)
+            </button>
+            <button class="btn-header-action" onclick="toggleDrawer('history')" title="פתיחת היסטוריית העתקות">
+                <span>🕒</span> היסטוריה (<span id="hist-count-badge">0</span>)
+            </button>
+            <button class="btn-header-action" onclick="exportData()" title="ייצוא גיבוי של מועדפים והיסטוריה לקובץ JSON">
+                <span>📤</span> גיבוי / ייצוא
+            </button>
+            <button class="btn-header-action" onclick="triggerImport()" title="שחזור או שיתוף נתונים מקובץ גיבוי">
+                <span>📥</span> שחזור / ייבוא
+            </button>
+            <input type="file" id="import-file-elem" accept=".json" style="display:none" onchange="handleImportFile(event)">
+        </div>
+    </div>
+
+    <!-- Navigation Tabs (Only 2 Tabs) -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('list')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/></svg>
+            רשימת ערכים (| / &)
+        </button>
+        <button class="tab-btn" onclick="switchTab('range')">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 19H5V5h14v14zM5 3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5zm7 9h-2V7h-2v5H6v2h2v5h2v-5h2v-2z"/></svg>
+            מחולל טווחים (..)
+        </button>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content">
+        <!-- Tab 1: List (Main Tab) -->
+        <div id="tab-list" class="tab-pane active">
+            
+            <!-- View Mode & Format Bar -->
+            <div class="view-mode-bar">
+                <div class="view-toggle-group">
+                    <button id="btn-view-text" class="view-btn active" onclick="switchInputMode('text')">
+                        <span>📝</span> תצוגת טקסט רגילה
+                    </button>
+                    <button id="btn-view-excel" class="view-btn" onclick="switchInputMode('excel')">
+                        <span>📊</span> תצוגת תאים (סגנון אקסל)
+                    </button>
+                </div>
+
+                <div id="format-selection-group" class="format-bar">
+                    <span class="format-label">פורמט הקלט (איך הערכים מופרדים):</span>
+                    <div class="format-pills">
+                        <span class="format-pill active" data-format="auto" onclick="setInputFormat('auto')">אוטומטי</span>
+                        <span class="format-pill" data-format="newline" onclick="setInputFormat('newline')">שורה חדשה</span>
+                        <span class="format-pill" data-format="comma" onclick="setInputFormat('comma')">פסיקים</span>
+                        <span class="format-pill" data-format="semicolon" onclick="setInputFormat('semicolon')">נקודה פסיק</span>
+                        <span class="format-pill" data-format="space" onclick="setInputFormat('space')">רווחים</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Area View Container -->
+            <div id="container-text-view">
+                <div class="input-toolbar">
+                    <span class="input-title">
+                        הכנס ערכים לסינון:
+                    </span>
+                    <!-- Prefix Tools (Add to Current Line / Selection) -->
+                    <div class="prefix-tools">
+                        <span class="prefix-label">הוסף לשורה הנוכחית:</span>
+                        <button class="btn-prefix accent" onclick="insertLinePrefix('<>')" title="הוסף סימן שונה (<>) לשורה שבה נמצא הסמן">
+                            <strong>&lt;&gt;</strong> שונה
+                        </button>
+                        <button class="btn-prefix" onclick="insertLinePrefix('>')" title="גדול מ-">&gt;</button>
+                        <button class="btn-prefix" onclick="insertLinePrefix('<')" title="קטן מ-">&lt;</button>
+                        <button class="btn-prefix" onclick="insertLinePrefix('>=')" title="גדול או שווה">&gt;=</button>
+                        <button class="btn-prefix" onclick="insertLinePrefix('<=')" title="קטן או שווה">&lt;=</button>
+                        <button class="btn-prefix" onclick="insertLinePrefix('..')" title="טווח">..</button>
+                    </div>
+                </div>
+
+                <div class="textarea-wrapper">
+                    <!-- Resizable Textarea in both directions -->
+                    <textarea id="list-input" placeholder="הדבק או הקלד ערכים כאן...&#10;10&#10;20&#10;30" oninput="onTextInputChanged()"></textarea>
+                </div>
+
+                <div class="resize-controls">
+                    <span>💡 ניתן לגרור את הפינה השמאלית-תחתונה להרחבה וצמצום חופשי (לאורך ולרוחב)</span>
+                </div>
+            </div>
+
+            <!-- Excel Style Table View Container -->
+            <div id="container-excel-view" style="display: none;">
+                <div class="excel-container">
+                    <div class="excel-toolbar">
+                        <span style="font-weight: 600; font-size: 0.88rem; color: var(--primary);">טבלת עריכה בסגנון Excel / Google Sheets:</span>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-mini" onclick="addExcelRow()">➕ הוסף שורה</button>
+                            <button class="btn-mini" onclick="openPasteModal()">📥 הדבק מאקסל</button>
+                            <button class="btn-mini danger" onclick="clearExcelTable()">🧹 רוקן טבלה</button>
+                        </div>
+                    </div>
+                    <div class="excel-table-scroll">
+                        <table class="excel-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45px; text-align: center;">#</th>
+                                    <th style="width: 110px; text-align: center;">קידומת מסנן</th>
+                                    <th>ערך (Value)</th>
+                                    <th style="width: 50px; text-align: center;">מחק</th>
+                                </tr>
+                            </thead>
+                            <tbody id="excel-table-body">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Items & Characters Counter Stats Bar -->
+            <div class="stats-badge-bar">
+                <div class="stat-item">
+                    <span>קלט:</span>
+                    <span id="stat-main-badge" class="stat-highlight">0 פריטים, 0 תווים</span>
+                </div>
+                <span>•</span>
+                <div class="stat-item">
+                    <span>אורך מסנן סופי:</span>
+                    <span id="stat-output-len" class="stat-number">0 תווים</span>
+                </div>
+            </div>
+
+            <!-- Anchor for Output Section in Tab 1 (Above "אפשרויות ומסננים") -->
+            <div id="tab-list-output-anchor">
+                <!-- Output Box Section will live here when Tab 1 is active -->
+                <div class="output-section" id="output-section">
+                    <div class="output-header">
+                        <div class="output-title-group">
+                            <span class="output-title">מחרוזת המסנן המוכנה להעתקה ל-NAV:</span>
+                            <span id="output-badge-count" class="output-char-badge">0 תווים</span>
+                        </div>
+                        <div class="output-header-actions">
+                            <button id="copy-btn" class="btn-copy" onclick="copyResult()">
+                                <svg class="icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                                <span>העתק ללוח</span>
+                            </button>
+                            <button class="btn-favorite" onclick="saveToFavorites()" title="שמירה במועדפים עם כוכב">
+                                <span>⭐</span>
+                                <span>שמור במועדפים</span>
+                            </button>
+                            <button class="btn-clear" onclick="clearAllData()" title="נקה את כל השדות">
+                                <span>🧹</span>
+                                <span>נקה הכל</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Full-Width Single Output Row -->
+                    <div class="output-box-wrapper-full">
+                        <input type="text" id="result-output" class="output-box-full" readonly placeholder="המחרוזת תופיע כאן...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Options & Modifiers Panel (Under the output box) -->
+            <div class="controls-panel" id="controls-panel">
+                <div class="panel-row">
+                    <span class="panel-title">אפשרויות ומסננים:</span>
+                    <div class="checkboxes-grid">
+                        <!-- Row 1: 4 Checkboxes -->
+                        <label class="custom-checkbox checked" id="lbl-opt-delimiter">
+                            <input type="checkbox" id="opt-delimiter" checked onchange="updateCheckboxState(this); generateFilter()">
+                            <span><strong>| (או)</strong> שרשור בקו אנכי</span>
+                        </label>
+                        <label class="custom-checkbox" id="lbl-opt-wrap-wildcard">
+                            <input type="checkbox" id="opt-wrap-wildcard" onchange="updateCheckboxState(this); generateFilter()">
+                            <span><strong>*</strong> עטיפה בכוכביות (*ערך*)</span>
+                        </label>
+                        <label class="custom-checkbox" id="lbl-opt-wrap-quotes">
+                            <input type="checkbox" id="opt-wrap-quotes" onchange="updateCheckboxState(this); generateFilter()">
+                            <span><strong>'</strong> עטיפה בגרשיים ('ערך')</span>
+                        </label>
+                        <label class="custom-checkbox" id="lbl-opt-exclude-all">
+                            <input type="checkbox" id="opt-exclude-all" onchange="updateCheckboxState(this); generateFilter()">
+                            <span><strong>&lt;&gt;</strong> החרגת כל הערכים (&lt;&gt;X)</span>
+                        </label>
+
+                        <!-- Row 2: 2 Checkboxes + 1 Custom Delimiter Box (occupying 2 slots) -->
+                        <label class="custom-checkbox checked" id="lbl-opt-remove-empty">
+                            <input type="checkbox" id="opt-remove-empty" checked onchange="updateCheckboxState(this); generateFilter()">
+                            <span>הסר שורות ריקות</span>
+                        </label>
+                        <label class="custom-checkbox" id="lbl-opt-remove-dups">
+                            <input type="checkbox" id="opt-remove-dups" onchange="updateCheckboxState(this); generateFilter()">
+                            <span>הסרת כפילויות</span>
+                        </label>
+                        <div class="custom-sep-grid-card">
+                            <span class="custom-sep-label">תו הפרדה מותאם אישית:</span>
+                            <input type="text" id="custom-sep-input" placeholder="למשל ; או &" oninput="onCustomSepChanged()" title="מבטל את ה-| כשממולא">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Tab 2: Range Generator -->
+        <div id="tab-range" class="tab-pane">
+            <div class="range-box">
+                <div class="row">
+                    <div class="col">
+                        <label for="range-start">ערך התחלתי:</label>
+                        <input type="text" id="range-start" placeholder="לדוגמה: 10 או 010126" oninput="generateFilter()">
+                    </div>
+                    <div class="col">
+                        <label for="range-end">ערך סופי:</label>
+                        <input type="text" id="range-end" placeholder="לדוגמה: 20 או 310126" oninput="generateFilter()">
+                    </div>
+                </div>
+                <div style="margin-top: 18px;">
+                    <label>קיצורים נפוצים:</label>
+                    <div class="quick-btn-group">
+                        <button class="quick-btn" onclick="setRange('10', '20')">10..20</button>
+                        <button class="quick-btn" onclick="setRange('1000', '')">1000.. (מ-1000 ומעלה)</button>
+                        <button class="quick-btn" onclick="setRange('', '2500')">..2500 (עד 2500)</button>
+                        <button class="quick-btn" onclick="setRange('A', 'Z')">'A'..'Z'</button>
+                    </div>
+                </div>
+            </div>
+            <!-- Anchor for Output Section in Tab 2 -->
+            <div id="tab-range-output-anchor"></div>
+        </div>
+
+        <!-- Drawers for History & Favorites -->
+        <div class="drawer-container">
+            <!-- Favorites Drawer -->
+            <div id="drawer-favs" class="drawer-card">
+                <div class="drawer-header" onclick="toggleDrawer('favs')">
+                    <div class="drawer-header-left">
+                        <span>⭐ מועדפים שמורים</span>
+                        <span id="favs-counter" class="drawer-badge">0 פריטים</span>
+                    </div>
+                    <span id="favs-arrow">▼</span>
+                </div>
+                <div class="drawer-content">
+                    <div id="favs-list" class="list-items">
+                        <div class="empty-hint">אין עדיין מועדפים שמורים. לחץ על "שמור במועדפים" כדי לשמור מסנן לשימוש חוזר!</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Drawer -->
+            <div id="drawer-history" class="drawer-card">
+                <div class="drawer-header" onclick="toggleDrawer('history')">
+                    <div class="drawer-header-left">
+                        <span>🕒 היסטוריית העתקות</span>
+                        <span id="history-counter" class="drawer-badge">0 פריטים</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <button class="btn-mini danger" onclick="event.stopPropagation(); clearHistory();" title="איפוס היסטוריה">🗑️ איפוס היסטוריה</button>
+                        <span id="history-arrow">▼</span>
+                    </div>
+                </div>
+                <div class="drawer-content">
+                    <div id="history-list" class="list-items">
+                        <div class="empty-hint">ההיסטוריה ריקה. בכל פעם שתעתיק מסנן, הוא יישמר כאן אוטומטית.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal for Excel Paste -->
+<div id="modal-paste" class="modal-backdrop">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>📥 הדבקת עמודה מאקסל</span>
+            <button style="border:none;background:none;font-size:1.2rem;cursor:pointer;" onclick="closePasteModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 8px;">
+                הדבק כאן נתונים שהועתקו מאקסל (עמודה אחת או שורות מופרדות):
+            </p>
+            <textarea id="paste-modal-input" style="width:100%; height:160px; padding:8px; border:1px solid var(--border); border-radius:6px; font-family:Consolas, monospace;" placeholder="הדבק כאן (Ctrl+V)..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal-cancel" onclick="closePasteModal()">ביטול</button>
+            <button class="btn-modal-primary" onclick="confirmExcelPaste()">הוסף לטבלה</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Editing Favorites -->
+<div id="modal-edit-fav" class="modal-backdrop">
+    <div class="modal-box">
+        <div class="modal-header">
+            <span>✏️ עריכת מסנן מועדף</span>
+            <button style="border:none;background:none;font-size:1.2rem;cursor:pointer;" onclick="closeEditFavModal()">✕</button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="edit-fav-id">
+            <div style="margin-bottom: 14px;">
+                <label for="edit-fav-title" style="margin-bottom: 6px; font-weight: 600; font-size: 0.88rem;">כותרת / תיאור המועדף:</label>
+                <input type="text" id="edit-fav-title" placeholder="הכנס שם למועדף..." style="width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px; font-size: 0.92rem;">
+            </div>
+            <div>
+                <label for="edit-fav-val" style="margin-bottom: 6px; font-weight: 600; font-size: 0.88rem;">מחרוזת המסנן (תוכן):</label>
+                <input type="text" id="edit-fav-val" placeholder="מחרוזת המסנן..." style="width: 100%; padding: 8px 10px; border: 1.5px solid var(--border); border-radius: 6px; font-family: Consolas, monospace; font-size: 0.95rem; direction: ltr; text-align: left;">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal-cancel" onclick="closeEditFavModal()">ביטול</button>
+            <button class="btn-modal-primary" onclick="confirmEditFav()">שמור שינויים</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast">
+    <span>✓</span>
+    <span id="toast-msg">המחרוזת הועתקה ללוח בהצלחה!</span>
+</div>
+
+<script>
+    // State management
+    let activeTab = 'list';
+    let inputMode = 'text'; // 'text' | 'excel'
+    let inputFormat = 'auto'; // 'auto' | 'newline' | 'comma' | 'semicolon' | 'space'
+    let activeExcelRowIndex = -1;
+    let excelRows = [
+        { prefix: '', val: '10' },
+        { prefix: '<>', val: '20' },
+        { prefix: '', val: '30' }
+    ];
+
+    // Storage Keys
+    const STORAGE_KEY_HIST = 'nav_filter_history_v3';
+    const STORAGE_KEY_FAVS = 'nav_filter_favs_v3';
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('list-input').value = "10\n20\n30";
+        renderExcelTable();
+        loadHistory();
+        loadFavorites();
+        generateFilter();
+    });
+
+    // Tab Switching
+    function switchTab(tabName) {
+        activeTab = tabName;
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+            const tabs = ['list', 'range'];
+            btn.classList.toggle('active', tabs[idx] === tabName);
+        });
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+
+        // Dynamically place output section inside active tab
+        const outputSection = document.getElementById('output-section');
+        if (tabName === 'list') {
+            document.getElementById('tab-list-output-anchor').appendChild(outputSection);
+        } else if (tabName === 'range') {
+            document.getElementById('tab-range-output-anchor').appendChild(outputSection);
+        }
+
+        generateFilter();
+    }
+
+    // Input Mode Switching (Text vs Excel)
+    function switchInputMode(mode) {
+        inputMode = mode;
+        const btnText = document.getElementById('btn-view-text');
+        const btnExcel = document.getElementById('btn-view-excel');
+        const containerText = document.getElementById('container-text-view');
+        const containerExcel = document.getElementById('container-excel-view');
+        const formatGroup = document.getElementById('format-selection-group');
+
+        if (mode === 'text') {
+            btnText.classList.add('active');
+            btnExcel.classList.remove('active');
+            containerText.style.display = 'block';
+            containerExcel.style.display = 'none';
+            formatGroup.style.visibility = 'visible';
+            syncExcelToText();
+        } else {
+            btnText.classList.remove('active');
+            btnExcel.classList.add('active');
+            containerText.style.display = 'none';
+            containerExcel.style.display = 'block';
+            formatGroup.style.visibility = 'hidden';
+            syncTextToExcel();
+            renderExcelTable();
+        }
+        generateFilter();
+    }
+
+    // Input Format Selection
+    function setInputFormat(format) {
+        inputFormat = format;
+        document.querySelectorAll('.format-pill').forEach(pill => {
+            pill.classList.toggle('active', pill.getAttribute('data-format') === format);
+        });
+        generateFilter();
+    }
+
+    // Insert Line Prefix (<>, >, <, >=, <=, ..)
+    function insertLinePrefix(prefix) {
+        if (inputMode === 'excel') {
+            const targetIdx = activeExcelRowIndex >= 0 ? activeExcelRowIndex : 0;
+            if (excelRows.length > targetIdx) {
+                excelRows[targetIdx].prefix = (excelRows[targetIdx].prefix === prefix) ? '' : prefix;
+                renderExcelTable();
+                generateFilter();
+                showToast(`עודכנה קידומת "${prefix}" בשורה ${targetIdx + 1}`);
+            }
+            return;
+        }
+
+        const textarea = document.getElementById('list-input');
+        const text = textarea.value;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+
+        const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+        let lineEnd = text.indexOf('\n', end);
+        if (lineEnd === -1) lineEnd = text.length;
+
+        const before = text.substring(0, lineStart);
+        const targetChunk = text.substring(lineStart, lineEnd);
+        const after = text.substring(lineEnd);
+
+        const lines = targetChunk.split('\n');
+        let statusAction = '';
+        const updatedLines = lines.map(line => {
+            if (!line.trim()) return line;
+            if (line.startsWith(prefix)) {
+                statusAction = 'הוסר';
+                return line.substring(prefix.length);
+            } else {
+                statusAction = 'התווסף';
+                return prefix + line;
+            }
+        });
+
+        const newChunk = updatedLines.join('\n');
+        textarea.value = before + newChunk + after;
+
+        textarea.selectionStart = lineStart;
+        textarea.selectionEnd = lineStart + newChunk.length;
+        textarea.focus();
+
+        generateFilter();
+        showToast(`סימן "${prefix}" ${statusAction || 'עודכן'} בהצלחה!`);
+    }
+
+    function onTextInputChanged() {
+        generateFilter();
+    }
+
+    function updateCheckboxState(checkbox) {
+        const label = checkbox.closest('.custom-checkbox');
+        if (label) {
+            label.classList.toggle('checked', checkbox.checked);
+        }
+    }
+
+    function onCustomSepChanged() {
+        generateFilter();
+    }
+
+    function parseInputItems(rawText) {
+        if (!rawText) return [];
+        let rawItems = [];
+
+        if (inputFormat === 'newline') {
+            rawItems = rawText.split(/\r?\n/);
+        } else if (inputFormat === 'comma') {
+            rawItems = rawText.split(',');
+        } else if (inputFormat === 'semicolon') {
+            rawItems = rawText.split(';');
+        } else if (inputFormat === 'space') {
+            rawItems = rawText.split(/\s+/);
+        } else {
+            if (rawText.includes('\n')) {
+                rawItems = rawText.split(/\r?\n/);
+            } else if (rawText.includes(';')) {
+                rawItems = rawText.split(';');
+            } else if (rawText.includes(',')) {
+                rawItems = rawText.split(',');
+            } else if (rawText.includes('\t')) {
+                rawItems = rawText.split('\t');
+            } else if (/\s+/.test(rawText.trim())) {
+                rawItems = rawText.trim().split(/\s+/);
+            } else {
+                rawItems = [rawText];
+            }
+        }
+        return rawItems;
+    }
+
+    function extractPrefixAndVal(str) {
+        const trimmed = str.trim();
+        const m = trimmed.match(/^(<>|>=|<=|>|<|\.\.)(.*)$/);
+        if (m) {
+            return { prefix: m[1], val: m[2].trim() };
+        }
+        return { prefix: '', val: trimmed };
+    }
+
+    function syncTextToExcel() {
+        const text = document.getElementById('list-input').value;
+        const parsed = parseInputItems(text);
+        excelRows = parsed.filter(l => l.trim().length > 0).map(item => extractPrefixAndVal(item));
+        if (excelRows.length === 0) {
+            excelRows = [{ prefix: '', val: '' }];
+        }
+    }
+
+    function syncExcelToText() {
+        const lines = excelRows
+            .filter(r => r.val.trim().length > 0 || r.prefix.length > 0)
+            .map(r => `${r.prefix}${r.val}`);
+        document.getElementById('list-input').value = lines.join('\n');
+    }
+
+    function renderExcelTable() {
+        const tbody = document.getElementById('excel-table-body');
+        tbody.innerHTML = '';
+
+        excelRows.forEach((row, index) => {
+            const tr = document.createElement('tr');
+
+            tr.innerHTML = `
+                <td class="row-num">${index + 1}</td>
+                <td style="text-align: center;">
+                    <span class="prefix-badge-btn ${row.prefix ? 'active' : ''}" 
+                          onclick="cyclePrefix(${index})" 
+                          title="לחץ להחלפת קידומת (<>, >, <, >=, <=, ..)">
+                        ${row.prefix ? row.prefix : '(ללא)'}
+                    </span>
+                </td>
+                <td>
+                    <input type="text" class="excel-cell-input" value="${escapeHtml(row.val)}" 
+                           placeholder="הקלד ערך..." 
+                           onfocus="activeExcelRowIndex = ${index}"
+                           oninput="onExcelCellChange(${index}, this.value)"
+                           onkeydown="handleExcelKeyDown(event, ${index})">
+                </td>
+                <td style="text-align: center;">
+                    <button class="btn-table-action" onclick="deleteExcelRow(${index})" title="מחק שורה">✕</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function cyclePrefix(index) {
+        const prefixes = ['', '<>', '>', '<', '>=', '<=', '..'];
+        const current = excelRows[index].prefix;
+        const nextIdx = (prefixes.indexOf(current) + 1) % prefixes.length;
+        excelRows[index].prefix = prefixes[nextIdx];
+        renderExcelTable();
+        generateFilter();
+    }
+
+    function onExcelCellChange(index, val) {
+        excelRows[index].val = val;
+        generateFilter();
+    }
+
+    function handleExcelKeyDown(e, index) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            addExcelRow(index + 1);
+        }
+    }
+
+    function addExcelRow(atIndex) {
+        const newRow = { prefix: '', val: '' };
+        if (typeof atIndex === 'number') {
+            excelRows.splice(atIndex, 0, newRow);
+        } else {
+            excelRows.push(newRow);
+        }
+        renderExcelTable();
+        setTimeout(() => {
+            const inputs = document.querySelectorAll('.excel-cell-input');
+            const target = typeof atIndex === 'number' ? inputs[atIndex] : inputs[inputs.length - 1];
+            if (target) target.focus();
+        }, 50);
+        generateFilter();
+    }
+
+    function deleteExcelRow(index) {
+        if (excelRows.length <= 1) {
+            excelRows = [{ prefix: '', val: '' }];
+        } else {
+            excelRows.splice(index, 1);
+        }
+        renderExcelTable();
+        generateFilter();
+    }
+
+    function clearExcelTable() {
+        excelRows = [{ prefix: '', val: '' }];
+        renderExcelTable();
+        generateFilter();
+    }
+
+    function openPasteModal() {
+        document.getElementById('paste-modal-input').value = '';
+        document.getElementById('modal-paste').classList.add('active');
+        setTimeout(() => document.getElementById('paste-modal-input').focus(), 100);
+    }
+
+    function closePasteModal() {
+        document.getElementById('modal-paste').classList.remove('active');
+    }
+
+    function confirmExcelPaste() {
+        const pasted = document.getElementById('paste-modal-input').value;
+        if (pasted.trim()) {
+            const lines = pasted.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+            if (excelRows.length === 1 && !excelRows[0].val) {
+                excelRows = [];
+            }
+            lines.forEach(line => {
+                excelRows.push(extractPrefixAndVal(line));
+            });
+            renderExcelTable();
+            generateFilter();
+            showToast(`נוספו ${lines.length} שורות בהצלחה`);
+        }
+        closePasteModal();
+    }
+
+    function generateFilter() {
+        let result = '';
+        let totalItemsCount = 0;
+        let totalCharsInput = 0;
+
+        if (activeTab === 'list') {
+            const optDelimiter = document.getElementById('opt-delimiter').checked;
+            const wrapWildcard = document.getElementById('opt-wrap-wildcard').checked;
+            const wrapQuotes = document.getElementById('opt-wrap-quotes').checked;
+            const excludeAll = document.getElementById('opt-exclude-all').checked;
+            const removeEmpty = document.getElementById('opt-remove-empty').checked;
+            const removeDups = document.getElementById('opt-remove-dups').checked;
+
+            const customSep = document.getElementById('custom-sep-input').value;
+            let sep = '|';
+            if (customSep) {
+                sep = customSep;
+            } else if (optDelimiter) {
+                sep = '|';
+            } else {
+                sep = '';
+            }
+
+            let items = [];
+
+            if (inputMode === 'text') {
+                const text = document.getElementById('list-input').value;
+                let parsed = parseInputItems(text);
+
+                if (removeEmpty) {
+                    parsed = parsed.map(s => s.trim()).filter(s => s.length > 0);
+                } else {
+                    parsed = parsed.map(s => s.trim());
+                }
+
+                totalCharsInput = parsed.reduce((acc, curr) => acc + curr.length, 0);
+                items = parsed.map(item => extractPrefixAndVal(item));
+            } else {
+                let filtered = excelRows;
+                if (removeEmpty) {
+                    filtered = filtered.filter(r => r.val.trim().length > 0 || r.prefix.length > 0);
+                }
+                totalCharsInput = filtered.reduce((acc, r) => acc + r.val.length + r.prefix.length, 0);
+                items = filtered;
+            }
+
+            if (removeDups) {
+                const seen = new Set();
+                items = items.filter(item => {
+                    const key = `${item.prefix}###${item.val}`;
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
+            }
+
+            totalItemsCount = items.length;
+
+            const formatted = items.map(item => {
+                let val = item.val;
+                if (wrapWildcard && val) val = `*${val}*`;
+                if (wrapQuotes && val) val = `'${val}'`;
+
+                let finalPrefix = item.prefix;
+                if (excludeAll) {
+                    if (!finalPrefix.startsWith('<>')) {
+                        finalPrefix = `<>${finalPrefix}`;
+                    }
+                }
+                return `${finalPrefix}${val}`;
+            });
+
+            if (excludeAll && !customSep) {
+                sep = '&';
+            }
+
+            result = formatted.join(sep);
+
+            document.getElementById('stat-main-badge').innerText = `${totalItemsCount} פריטים, ${totalCharsInput} תווים`;
+            document.getElementById('stat-output-len').innerText = `${result.length} תווים`;
+
+        } else if (activeTab === 'range') {
+            const start = document.getElementById('range-start').value.trim();
+            const end = document.getElementById('range-end').value.trim();
+
+            if (start && end) {
+                result = `${start}..${end}`;
+            } else if (start && !end) {
+                result = `${start}..`;
+            } else if (!start && end) {
+                result = `..${end}`;
+            }
+
+            totalItemsCount = (start || end) ? 1 : 0;
+            totalCharsInput = start.length + end.length;
+            document.getElementById('stat-main-badge').innerText = `${totalItemsCount} פריטים, ${totalCharsInput} תווים`;
+            document.getElementById('stat-output-len').innerText = `${result.length} תווים`;
+        }
+
+        document.getElementById('result-output').value = result;
+        document.getElementById('output-badge-count').innerText = `${result.length} תווים`;
+    }
+
+    function setRange(start, end) {
+        document.getElementById('range-start').value = start;
+        document.getElementById('range-end').value = end;
+        generateFilter();
+    }
+
+    function copyResult() {
+        const output = document.getElementById('result-output');
+        if (!output.value) {
+            showToast('אין תוכן להעתקה!');
+            return;
+        }
+
+        output.select();
+        navigator.clipboard.writeText(output.value).then(() => {
+            const copyBtn = document.getElementById('copy-btn');
+            copyBtn.classList.add('success');
+            const originalText = copyBtn.innerHTML;
+            copyBtn.innerHTML = `<span>✓</span> <span>הועתק בהצלחה!</span>`;
+
+            showToast('המחרוזת הועתקה ללוח בהצלחה!');
+            addToHistory(output.value);
+
+            setTimeout(() => {
+                copyBtn.classList.remove('success');
+                copyBtn.innerHTML = originalText;
+            }, 1800);
+        }).catch(() => {
+            document.execCommand('copy');
+            showToast('הועתק ללוח!');
+            addToHistory(output.value);
+        });
+    }
+
+    function addToHistory(filterStr) {
+        if (!filterStr) return;
+        let hist = getStoredData(STORAGE_KEY_HIST);
+        if (hist.length > 0 && hist[0].val === filterStr) return;
+
+        const date = new Date();
+        const timeStr = date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+        const dateStr = date.toLocaleDateString('he-IL');
+
+        hist.unshift({
+            id: Date.now(),
+            val: filterStr,
+            time: `${dateStr} ${timeStr}`,
+            length: filterStr.length
+        });
+
+        if (hist.length > 30) hist = hist.slice(0, 30);
+        saveStoredData(STORAGE_KEY_HIST, hist);
+        renderHistory();
+    }
+
+    function loadHistory() {
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const hist = getStoredData(STORAGE_KEY_HIST);
+        const container = document.getElementById('history-list');
+        const badge = document.getElementById('hist-count-badge');
+        const counter = document.getElementById('history-counter');
+
+        badge.innerText = hist.length;
+        counter.innerText = `${hist.length} פריטים`;
+
+        if (hist.length === 0) {
+            container.innerHTML = '<div class="empty-hint">ההיסטוריה ריקה. בכל פעם שתעתיק מסנן, הוא יישמר כאן אוטומטית.</div>';
+            return;
+        }
+
+        container.innerHTML = hist.map(item => `
+            <div class="list-item-card">
+                <div class="item-text-info">
+                    <span class="item-text-val">${escapeHtml(item.val)}</span>
+                    <span class="item-meta">
+                        <span>🕒 ${item.time}</span>
+                        <span>•</span>
+                        <span>${item.length} תווים</span>
+                    </span>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-mini fav-btn" onclick="addHistoryItemToFavorites('${escapeAttr(item.val)}')" title="הוסף לפריטים המועדפים">⭐ הוסף למועדפים</button>
+                    <button class="btn-mini" onclick="copySnippet('${escapeAttr(item.val)}')">📋 העתק</button>
+                    <button class="btn-mini" onclick="restoreFilter('${escapeAttr(item.val)}')">↩️ שחזר</button>
+                    <button class="btn-mini danger" onclick="deleteHistoryItem(${item.id})">✕</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addHistoryItemToFavorites(val) {
+        const preview = val.length > 25 ? val.substring(0, 25) + '...' : val;
+        const favTitle = prompt('הכנס כותרת/תיאור למועדף זה:', `מסנן מהיסטוריה (${preview})`);
+        if (favTitle === null) return;
+
+        let favs = getStoredData(STORAGE_KEY_FAVS);
+        const date = new Date();
+        const dateStr = date.toLocaleDateString('he-IL');
+
+        favs.unshift({
+            id: Date.now(),
+            title: favTitle.trim() || 'מסנן מהיסטוריה',
+            val: val,
+            date: dateStr,
+            length: val.length
+        });
+
+        saveStoredData(STORAGE_KEY_FAVS, favs);
+        renderFavorites();
+        openDrawer('favs');
+        showToast('המסנן נוסף למועדפים בהצלחה! ⭐');
+    }
+
+    function clearHistory() {
+        if (confirm('האם אתה בטוח שברצונך לאפס את היסטוריית ההעתקות?')) {
+            saveStoredData(STORAGE_KEY_HIST, []);
+            renderHistory();
+            showToast('ההיסטוריה אופסה בהצלחה');
+        }
+    }
+
+    function deleteHistoryItem(id) {
+        let hist = getStoredData(STORAGE_KEY_HIST);
+        hist = hist.filter(item => item.id !== id);
+        saveStoredData(STORAGE_KEY_HIST, hist);
+        renderHistory();
+    }
+
+    function saveToFavorites() {
+        const output = document.getElementById('result-output').value;
+        if (!output) {
+            showToast('אין מחרוזת מסנן לשמירה!');
+            return;
+        }
+
+        const preview = output.length > 25 ? output.substring(0, 25) + '...' : output;
+        const favTitle = prompt('הכנס כותרת/תיאור למועדף זה:', `מסנן מועדף (${preview})`);
+        if (favTitle === null) return;
+
+        let favs = getStoredData(STORAGE_KEY_FAVS);
+        const date = new Date();
+        const dateStr = date.toLocaleDateString('he-IL');
+
+        favs.unshift({
+            id: Date.now(),
+            title: favTitle.trim() || 'מסנן ללא שם',
+            val: output,
+            date: dateStr,
+            length: output.length
+        });
+
+        saveStoredData(STORAGE_KEY_FAVS, favs);
+        renderFavorites();
+        openDrawer('favs');
+        showToast('המסנן נוסף למועדפים בהצלחה! ⭐');
+    }
+
+    function loadFavorites() {
+        renderFavorites();
+    }
+
+    function renderFavorites() {
+        const favs = getStoredData(STORAGE_KEY_FAVS);
+        const container = document.getElementById('favs-list');
+        const badge = document.getElementById('fav-count-badge');
+        const counter = document.getElementById('favs-counter');
+
+        badge.innerText = favs.length;
+        counter.innerText = `${favs.length} פריטים`;
+
+        if (favs.length === 0) {
+            container.innerHTML = '<div class="empty-hint">אין עדיין מועדפים שמורים. לחץ על "שמור במועדפים" כדי לשמור מסנן לשימוש חוזר!</div>';
+            return;
+        }
+
+        container.innerHTML = favs.map((item, idx) => `
+            <div class="list-item-card">
+                <div class="order-controls">
+                    <button class="btn-arrow" onclick="moveFavorite(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} title="העבר למעלה">▲</button>
+                    <button class="btn-arrow" onclick="moveFavorite(${idx}, 1)" ${idx === favs.length - 1 ? 'disabled' : ''} title="העבר למטה">▼</button>
+                </div>
+                <div class="item-text-info">
+                    <strong style="font-size:0.9rem; color:var(--primary);">⭐ ${escapeHtml(item.title)}</strong>
+                    <span class="item-text-val">${escapeHtml(item.val)}</span>
+                    <span class="item-meta">
+                        <span>📅 ${item.date}</span>
+                        <span>•</span>
+                        <span>${item.length} תווים</span>
+                    </span>
+                </div>
+                <div class="item-actions">
+                    <button class="btn-mini" onclick="openEditFavModal(${item.id})" title="עריכת כותרת ותוכן המסנן">✏️ ערוך</button>
+                    <button class="btn-mini" onclick="copySnippet('${escapeAttr(item.val)}')">📋 העתק</button>
+                    <button class="btn-mini" onclick="restoreFilter('${escapeAttr(item.val)}')">↩️ שחזר</button>
+                    <button class="btn-mini danger" onclick="deleteFavoriteItem(${item.id})">✕</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function moveFavorite(index, direction) {
+        let favs = getStoredData(STORAGE_KEY_FAVS);
+        const newIndex = index + direction;
+        if (newIndex < 0 || newIndex >= favs.length) return;
+
+        const temp = favs[index];
+        favs[index] = favs[newIndex];
+        favs[newIndex] = temp;
+
+        saveStoredData(STORAGE_KEY_FAVS, favs);
+        renderFavorites();
+    }
+
+    function openEditFavModal(id) {
+        const favs = getStoredData(STORAGE_KEY_FAVS);
+        const item = favs.find(f => f.id === id);
+        if (!item) return;
+
+        document.getElementById('edit-fav-id').value = item.id;
+        document.getElementById('edit-fav-title').value = item.title;
+        document.getElementById('edit-fav-val').value = item.val;
+
+        document.getElementById('modal-edit-fav').classList.add('active');
+        setTimeout(() => document.getElementById('edit-fav-title').focus(), 100);
+    }
+
+    function closeEditFavModal() {
+        document.getElementById('modal-edit-fav').classList.remove('active');
+    }
+
+    function confirmEditFav() {
+        const id = Number(document.getElementById('edit-fav-id').value);
+        const newTitle = document.getElementById('edit-fav-title').value.trim();
+        const newVal = document.getElementById('edit-fav-val').value.trim();
+
+        if (!newVal) {
+            showToast('מחרוזת המסנן אינה יכולה להיות ריקה');
+            return;
+        }
+
+        let favs = getStoredData(STORAGE_KEY_FAVS);
+        const idx = favs.findIndex(f => f.id === id);
+        if (idx !== -1) {
+            favs[idx].title = newTitle || 'מסנן ללא שם';
+            favs[idx].val = newVal;
+            favs[idx].length = newVal.length;
+            saveStoredData(STORAGE_KEY_FAVS, favs);
+            renderFavorites();
+            showToast('המועדף עודכן בהצלחה! ✓');
+        }
+        closeEditFavModal();
+    }
+
+    function deleteFavoriteItem(id) {
+        let favs = getStoredData(STORAGE_KEY_FAVS);
+        favs = favs.filter(item => item.id !== id);
+        saveStoredData(STORAGE_KEY_FAVS, favs);
+        renderFavorites();
+        showToast('המועדף הוסר');
+    }
+
+    function restoreFilter(val) {
+        document.getElementById('result-output').value = val;
+        document.getElementById('list-input').value = val.split('|').join('\n');
+        syncTextToExcel();
+        renderExcelTable();
+        generateFilter();
+        showToast('המסנן שוחזר למסך!');
+    }
+
+    function copySnippet(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('הועתק ללוח!');
+            addToHistory(text);
+        });
+    }
+
+    function toggleDrawer(name) {
+        const drawer = document.getElementById(`drawer-${name}`);
+        const arrow = document.getElementById(`${name === 'favs' ? 'favs' : 'history'}-arrow`);
+        drawer.classList.toggle('open');
+        arrow.innerText = drawer.classList.contains('open') ? '▲' : '▼';
+    }
+
+    function openDrawer(name) {
+        const drawer = document.getElementById(`drawer-${name}`);
+        const arrow = document.getElementById(`${name === 'favs' ? 'favs' : 'history'}-arrow`);
+        drawer.classList.add('open');
+        arrow.innerText = '▲';
+    }
+
+    function clearAllData() {
+        if (confirm('האם לנקות את תוכן השדות?')) {
+            document.getElementById('list-input').value = '';
+            document.getElementById('range-start').value = '';
+            document.getElementById('range-end').value = '';
+            excelRows = [{ prefix: '', val: '' }];
+            renderExcelTable();
+            generateFilter();
+            showToast('השדות נוקו');
+        }
+    }
+
+    // Export Data (Backup to JSON file)
+    function exportData() {
+        const favs = getStoredData(STORAGE_KEY_FAVS);
+        const hist = getStoredData(STORAGE_KEY_HIST);
+
+        if (favs.length === 0 && hist.length === 0) {
+            showToast('אין עדיין נתונים שמורים לייצוא');
+            return;
+        }
+
+        const backupData = {
+            appName: "Dynamics NAV Filter Generator",
+            version: "3.2",
+            exportedAt: new Date().toISOString(),
+            exportedAtFormatted: new Date().toLocaleString('he-IL'),
+            favorites: favs,
+            history: hist
+        };
+
+        const jsonStr = JSON.stringify(backupData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const dateStr = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = `nav_filters_backup_${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        showToast(`קובץ גיבוי הורד בהצלחה (${favs.length} מועדפים, ${hist.length} היסטוריה) 📤`);
+    }
+
+    // Import Data
+    function triggerImport() {
+        document.getElementById('import-file-elem').click();
+    }
+
+    function handleImportFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                if (!data || (!Array.isArray(data.favorites) && !Array.isArray(data.history))) {
+                    alert('קובץ הגיבוי אינו בפורמט תקין.');
+                    return;
+                }
+
+                const newFavs = Array.isArray(data.favorites) ? data.favorites : [];
+                const newHist = Array.isArray(data.history) ? data.history : [];
+
+                const shouldMerge = confirm(
+                    `נמצאו בקובץ:\n• ${newFavs.length} מועדפים\n• ${newHist.length} פריטי היסטוריה\n\nהאם למזג עם הנתונים הקיימים (אישור) או להחליף את כל הנתונים הקיימים (ביטול)?`
+                );
+
+                if (shouldMerge) {
+                    // Merge
+                    let currentFavs = getStoredData(STORAGE_KEY_FAVS);
+                    const existingFavVals = new Set(currentFavs.map(f => f.val));
+                    newFavs.forEach(f => {
+                        if (!existingFavVals.has(f.val)) {
+                            currentFavs.push({ ...f, id: Date.now() + Math.random() });
+                            existingFavVals.add(f.val);
+                        }
+                    });
+                    saveStoredData(STORAGE_KEY_FAVS, currentFavs);
+
+                    let currentHist = getStoredData(STORAGE_KEY_HIST);
+                    const existingHistVals = new Set(currentHist.map(h => h.val));
+                    newHist.forEach(h => {
+                        if (!existingHistVals.has(h.val)) {
+                            currentHist.push({ ...h, id: Date.now() + Math.random() });
+                            existingHistVals.add(h.val);
+                        }
+                    });
+                    saveStoredData(STORAGE_KEY_HIST, currentHist.slice(0, 40));
+                    showToast('הנתונים מוזגו בהצלחה! 📥');
+                } else {
+                    // Replace
+                    saveStoredData(STORAGE_KEY_FAVS, newFavs);
+                    saveStoredData(STORAGE_KEY_HIST, newHist.slice(0, 40));
+                    showToast('כל הנתונים הוחלפו בהצלחה! 📥');
+                }
+
+                renderFavorites();
+                renderHistory();
+            } catch (err) {
+                alert('שגיאה בקריאת הקובץ: ודא שזהו קובץ JSON תקין.');
+            }
+            event.target.value = '';
+        };
+        reader.readAsText(file);
+    }
+
+    function getStoredData(key) {
+        try {
+            const d = localStorage.getItem(key);
+            return d ? JSON.parse(d) : [];
+        } catch(e) {
+            return [];
+        }
+    }
+
+    function saveStoredData(key, data) {
+        try {
+            localStorage.setItem(key, JSON.stringify(data));
+        } catch(e) {}
+    }
+
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-msg').innerText = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2400);
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function escapeAttr(str) {
+        if (!str) return '';
+        return str.replace(/'/g, "\\'").replace(/"/g, "&quot;");
+    }
+</script>
+
+</body>
+</html>
